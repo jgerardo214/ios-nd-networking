@@ -75,6 +75,10 @@ class TMDBClient {
         let body = LoginRequest(username: username, password: password, requestToken: Auth.requestToken)
         request.httpBody = try! JSONEncoder().encode(body)
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            
+            // trying to debug the login issue
+            print(String(data: data!, encoding: .utf8)!)
+            
             guard let data = data else {
                 completion(false, error)
                 return
