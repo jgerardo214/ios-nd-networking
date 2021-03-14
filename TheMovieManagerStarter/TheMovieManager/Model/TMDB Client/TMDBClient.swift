@@ -10,7 +10,7 @@ import Foundation
 
 class TMDBClient {
     
-    static let apiKey = "YOUR_TMDB_API_KEY"
+    static let apiKey = "e364378e3a0df1f7a6d901dbb6204b97"
     
     struct Auth {
         static var accountId = 0
@@ -23,10 +23,17 @@ class TMDBClient {
         static let apiKeyParam = "?api_key=\(TMDBClient.apiKey)"
         
         case getWatchlist
+        case getRequestToken
+        case login
+        case sessionId
+        
         
         var stringValue: String {
             switch self {
             case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
+            case .getRequestToken: return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
+            case .login: return Endpoints.base + "/authenication/token/validate_with_login" + Endpoints.apiKeyParam
+            case .sessionId: return Endpoints.base + "/authentication/session/new" + Endpoints.apiKeyParam
             }
         }
         
@@ -34,6 +41,77 @@ class TMDBClient {
             return URL(string: stringValue)!
         }
     }
+    
+    class func createSessionID(completion: @escaping (Bool, Error?) -> Void) {
+        
+        var sessionRequest = URLRequest(url: Endpoints.sessionId.url)
+        sessionRequest.httpMethod = "POST"
+        sessionRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body = PostSession(requestToken: Auth.requestToken)
+        sessionRequest.httpBody = try! JSONEncoder().encode(body)
+        let task = URLSession.shared.dataTask(with: sessionRequest) { (data, response, error) in
+            guard let data = data else {
+                completion(false, error)
+                return
+            }
+            do {
+                let decoder = JSONDecoder()
+                let responseObject = try! decoder.decode(SessionResponse.self, from: data)
+                Auth.sessionId = responseObject.sessionID
+                completion(true, nil)
+            } catch {
+                completion(false, error)
+            }
+        }
+        task.resume()
+    }
+    
+    class func login(username: String, password: String, completion: @escaping (Bool, Error?) -> Void) {
+        
+        var request = URLRequest(url: Endpoints.login.url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = LoginRequest(username: username, password: password, requestToken: Auth.requestToken)
+        request.httpBody = try! JSONEncoder().encode(body)
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let data = data else {
+                completion(false, error)
+                return
+            }
+            do {
+                
+                let decoder = JSONDecoder()
+                let responseObject = try decoder.decode(RequestTokenResponse.self, from: data)
+                Auth.requestToken = responseObject.requestToken
+                completion(true, nil)
+            } catch {
+                completion(false, error)
+            }
+        }
+        task.resume()
+    }
+    
+    class func getRequestToken(completion: @escaping (Bool, Error?) -> Void) {
+        
+        let task = URLSession.shared.dataTask(with: Endpoints.getRequestToken.url) { data, response, error in
+            guard let data = data else {
+                completion(false, error)
+                return
+            }
+            let decoder = JSONDecoder()
+            do {
+                let responseObject = try decoder.decode(RequestTokenResponse.self, from: data)
+                Auth.requestToken = responseObject.requestToken
+                completion(true, nil)
+            } catch {
+                completion(false, error)
+            }
+        }
+        task.resume()
+    }
+    
+    
     
     class func getWatchlist(completion: @escaping ([Movie], Error?) -> Void) {
         let task = URLSession.shared.dataTask(with: Endpoints.getWatchlist.url) { data, response, error in
@@ -53,3 +131,4 @@ class TMDBClient {
     }
     
 }
+

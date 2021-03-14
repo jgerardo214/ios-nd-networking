@@ -10,7 +10,7 @@ import Foundation
 
 class TMDBClient {
     
-    static let apiKey = "YOUR_TMDB_API_KEY"
+    static let apiKey = "e364378e3a0df1f7a6d901dbb6204b97"
     
     struct Auth {
         static var accountId = 0
@@ -33,6 +33,7 @@ class TMDBClient {
         case markWatchlist
         case markFavorite
         case posterImage(String)
+        
         
         var stringValue: String {
             switch self {
