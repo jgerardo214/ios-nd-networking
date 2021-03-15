@@ -33,11 +33,14 @@ class LoginViewController: UIViewController {
     func handleRequestTokenReponse(success: Bool, error: Error?) {
         if success {
             print(TMDBClient.Auth.requestToken)
+            
             DispatchQueue.main.async {
-                TMDBClient.login(username: self.emailTextField.text ?? "", password: self.passwordTextField.text ?? "", completion: self.handleRequestTokenReponse(success:error:))
+                TMDBClient.login(username: self.emailTextField.text ?? "", password: self.passwordTextField.text ?? "", completion: self.handleLoginResponse(success:error:))
             }
             
         }
+        
+    }
         
         func handleLoginResponse(success: Bool, error: Error?) {
             print(TMDBClient.Auth.requestToken)
@@ -46,7 +49,6 @@ class LoginViewController: UIViewController {
                 TMDBClient.createSessionID(completion: handleLoginResponse(success:error:))
             }
         }
-    }
     
     func handleSessionReponse(success: Bool, error: Error?) {
         
@@ -60,4 +62,7 @@ class LoginViewController: UIViewController {
         
     }
     
+    
 }
+
+
