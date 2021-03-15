@@ -96,6 +96,7 @@ class TMDBClient {
             
             do {
                
+                print(String(data: data, encoding: .utf8))
                 
                 let decoder = JSONDecoder()
                 let responseObject = try decoder.decode(RequestTokenResponse.self, from: data)
