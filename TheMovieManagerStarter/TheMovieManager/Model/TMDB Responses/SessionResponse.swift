@@ -11,12 +11,12 @@ import Foundation
 struct SessionResponse: Codable {
     
     let success: Bool
-    let sessionID: String
+    let sessionId: String
     
     enum CodingKeys: String, CodingKey {
         
         case success
-        case sessionID = "session_id"
+        case sessionId = "session_id"
         
     }
     

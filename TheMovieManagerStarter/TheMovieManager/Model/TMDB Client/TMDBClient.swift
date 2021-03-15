@@ -31,9 +31,12 @@ class TMDBClient {
         var stringValue: String {
             switch self {
             case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
-            case .getRequestToken: return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
-            case .login: return Endpoints.base + "/authentication/token/validate_with_login" + Endpoints.apiKeyParam
-            case .createSessionId: return Endpoints.base + "/authentication/session/new" + Endpoints.apiKeyParam
+            case .getRequestToken:
+                return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
+            case .login:
+                return Endpoints.base + "/authentication/token/validate_with_login" + Endpoints.apiKeyParam
+            case .createSessionId:
+                return Endpoints.base + "/authentication/session/new" + Endpoints.apiKeyParam
             }
         }
         
@@ -66,7 +69,7 @@ class TMDBClient {
                 
                 let decoder = JSONDecoder()
                 let responseObject = try decoder.decode(SessionResponse.self, from: data)
-                Auth.sessionId = responseObject.sessionID
+                Auth.sessionId = responseObject.sessionId
                 completion(true, nil)
             } catch {
                 completion(false, error)
@@ -96,7 +99,7 @@ class TMDBClient {
             
             do {
                
-                print(String(data: data, encoding: .utf8))
+                //print(String(data: data, encoding: .utf8))
                 
                 let decoder = JSONDecoder()
                 let responseObject = try decoder.decode(RequestTokenResponse.self, from: data)
