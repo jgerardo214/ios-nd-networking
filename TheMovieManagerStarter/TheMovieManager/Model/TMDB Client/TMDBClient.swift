@@ -34,7 +34,8 @@ class TMDBClient {
         
         var stringValue: String {
             switch self {
-            case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
+            case .getWatchlist:
+                return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
             case .getRequestToken:
                 return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
             case .login:
@@ -69,7 +70,7 @@ class TMDBClient {
             }
             let decoder = JSONDecoder()
             do {
-                print(String(data: data, encoding: .utf8)!)
+                
                 let responseObject = try decoder.decode(ResponseType.self, from: data)
                 DispatchQueue.main.async {
                     completion(responseObject, nil)
@@ -91,7 +92,7 @@ class TMDBClient {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
 
-        let task = URLSession.shared.dataTask(with:url) { data, response, error in
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else {
                 
                 DispatchQueue.main.async {
